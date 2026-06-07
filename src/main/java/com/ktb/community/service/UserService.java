@@ -5,9 +5,12 @@ import com.ktb.community.dto.login.LoginResponseDto;
 import com.ktb.community.dto.password.PasswordUpdateRequestDto;
 import com.ktb.community.dto.user.SignUpRequestDto;
 import com.ktb.community.dto.user.SignUpResponseDto;
+import com.ktb.community.dto.user.UserResponseDto;
+import com.ktb.community.dto.user.UserUpdateRequestDto;
 import com.ktb.community.entity.User;
 import com.ktb.community.exception.*;
 import com.ktb.community.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +63,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public SignUpResponseDto getMyPage(String authorization, Long userId) {
+    public UserResponseDto getMyPage(String authorization, Long userId) {
 
         User loginUser = authService.getLoginUser(authorization);
 
@@ -68,10 +71,10 @@ public class UserService {
             throw new UnauthorizedException();
         }
 
-        return new SignUpResponseDto(loginUser.getUserId());
+        return new UserResponseDto(loginUser.getUserId(), loginUser.getNickname(), loginUser.getEmail(), loginUser.getPassword(), loginUser.getProfileImage());
     }
 
-    public void updateUser(String authorization, Long userId, SignUpRequestDto request) {
+    public void updateUser(String authorization, Long userId, @Valid UserUpdateRequestDto request) {
 
         User loginUser = authService.getLoginUser(authorization);
 
