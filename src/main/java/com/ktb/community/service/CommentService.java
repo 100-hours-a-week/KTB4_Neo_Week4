@@ -8,8 +8,6 @@ import com.ktb.community.entity.Comment;
 import com.ktb.community.entity.Post;
 import com.ktb.community.entity.User;
 import com.ktb.community.exception.ApiException;
-import com.ktb.community.exception.ContentNotFoundException;
-import com.ktb.community.exception.ForbiddenException;
 import com.ktb.community.repository.CommentRepository;
 import com.ktb.community.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -162,7 +160,7 @@ public class CommentService {
 
     private void validateCommentOwner(User user, Comment comment) {
         if (!comment.getUser().getUserId().equals(user.getUserId())) {
-            throw new ForbiddenException();
+            throw new ApiException(HttpStatus.FORBIDDEN, "denied_access");
         }
     }
 

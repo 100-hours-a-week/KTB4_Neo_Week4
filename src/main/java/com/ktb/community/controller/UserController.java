@@ -59,7 +59,7 @@ public class UserController {
         );
     }
 
-    @GetMapping("/{userId}")
+    @PatchMapping("/{userId}")
     public ResponseEntity<ApiResponse<Void>> updateUser(
             @RequestHeader("Authorization") String authorization,
             @PathVariable Long userId,

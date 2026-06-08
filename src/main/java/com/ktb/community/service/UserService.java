@@ -8,9 +8,10 @@ import com.ktb.community.dto.user.SignUpResponseDto;
 import com.ktb.community.dto.user.UserResponseDto;
 import com.ktb.community.dto.user.UserUpdateRequestDto;
 import com.ktb.community.entity.User;
-import com.ktb.community.exception.*;
+import com.ktb.community.exception.ApiException;
 import com.ktb.community.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +27,11 @@ public class UserService {
 
         if(userRepository.existsByEmail(request.getEmail())
                 || userRepository.existsByNickname(request.getNickname())) {
-            throw new AlreadyExistsException();
+            throw new ApiException(HttpStatus.CONFLICT, "already_exists");
         }
 
         if(!request.getPassword().equals(request.getPasswordCheck())) {
-            throw new InvalidInputException();
+            throw new ApiException(HttpStatus.BAD_REQUEST, "invalid_input");
         }
 
         User user = new User(
@@ -50,10 +51,10 @@ public class UserService {
     public LoginResponseDto login(LoginRequestDto request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new NotRegisteredException());
+                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "not_found_user"));
 
         if(!user.getPassword().equals(request.getPassword())) {
-            throw new InvalidPasswordException();
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "invalid_password");
         }
 
         String accessToken = "token-user-" + user.getUserId();
@@ -67,7 +68,7 @@ public class UserService {
         User loginUser = authService.getLoginUser(authorization);
 
         if(!loginUser.getUserId().equals(userId)) {
-            throw new UnauthorizedException();
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "unauthorized_user");
         }
 
         return new UserResponseDto(loginUser.getUserId(), loginUser.getNickname(), loginUser.getEmail(), loginUser.getPassword(), loginUser.getProfileImage());
@@ -78,7 +79,7 @@ public class UserService {
         User loginUser = authService.getLoginUser(authorization);
 
         if(!loginUser.getUserId().equals(userId)) {
-            throw new UnauthorizedException();
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "unauthorized_user");
         }
 
         loginUser.update(request.getNickname(), request.getProfileImage());
@@ -89,7 +90,7 @@ public class UserService {
         User loginUser = authService.getLoginUser(authorization);
 
         if(!loginUser.getUserId().equals(userId)) {
-            throw new UnauthorizedException();
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "unauthorized_user");
         }
 
         loginUser.updatePassword(request.getPassword());
@@ -100,11 +101,11 @@ public class UserService {
         User loginUser = authService.getLoginUser(authorization);
 
         if(!loginUser.getUserId().equals(userId)) {
-            throw new UnauthorizedException();
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "unauthorized_user");
         }
 
         if(loginUser.isDeleted()) {
-            throw new ConflictException();
+            throw new ApiException(HttpStatus.CONFLICT, "conflicted state");
         }
 
         loginUser.delete();

@@ -36,7 +36,7 @@ public class CommentController {
                 .body(new ApiResponse<>("create_comment_success", response));
     }
 
-    @PostMapping("/posts/{postId}/comments/{commentId}/reply")
+    @PostMapping("/comments/{commentId}/replies")
     public ResponseEntity<ApiResponse<CommentResponseDto>> createReply(
             @RequestHeader("Authorization") String authorization,
             @PathVariable Long postId,

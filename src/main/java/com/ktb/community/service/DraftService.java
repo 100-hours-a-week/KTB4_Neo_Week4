@@ -5,7 +5,6 @@ import com.ktb.community.dto.draft.DraftResponseDto;
 import com.ktb.community.entity.Draft;
 import com.ktb.community.entity.User;
 import com.ktb.community.exception.ApiException;
-import com.ktb.community.exception.ContentNotFoundException;
 import com.ktb.community.repository.DraftRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,7 +32,7 @@ public class DraftService {
 
     public DraftResponseDto autosaveDraft(User user, Long draftId, DraftRequestDto request) {
         Draft draft = draftRepository.findByDraftIdAndUser(draftId, user)
-                .orElseThrow(() -> new ContentNotFoundException());
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "content_not_found"));
 
         if (draft.isPublished()) {
             throw new ApiException(HttpStatus.CONFLICT, "draft_already_published");

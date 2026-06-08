@@ -50,7 +50,7 @@ public class PostService {
         long recentPostCount = postRepository.countByUserAndCreatedAtAfter(user, oneMinuteAgo);
 
         if (recentPostCount >= MAX_POSTS_PER_MINUTE) {
-            throw new ApiException(HttpStatus.TOO_MANY_REQUESTS, "too_many_post_requests");
+            throw new ApiException(HttpStatus.TOO_MANY_REQUESTS, "too_many_requests");
         }
 
         Post post = new Post(
@@ -107,7 +107,7 @@ public class PostService {
         Post post = getPost(postId);
 
         if (post.isDeleted()) {
-            throw new ApiException(HttpStatus.NOT_FOUND, "post_not_found");
+            throw new ApiException(HttpStatus.NOT_FOUND, "content_not_found");
         }
 
         boolean isViewCounted = increaseViewIfNeeded(user, post);
@@ -127,7 +127,7 @@ public class PostService {
         validatePostOwner(user, post);
 
         if (post.isDeleted()) {
-            throw new ApiException(HttpStatus.CONFLICT, "deleted_post_cannot_be_updated");
+            throw new ApiException(HttpStatus.CONFLICT, "conflicted state");
         }
 
         boolean sameTitle = post.getTitle().equals(request.getTitle());
@@ -135,7 +135,7 @@ public class PostService {
         boolean sameImage = String.valueOf(post.getPostImage()).equals(String.valueOf(request.getPostImage()));
 
         if (sameTitle && sameBody && sameImage) {
-            throw new ApiException(HttpStatus.CONFLICT, "post_content_not_changed");
+            throw new ApiException(HttpStatus.CONFLICT, "conflicted state");
         }
 
         PostEditHistory history = new PostEditHistory(post);
@@ -160,7 +160,7 @@ public class PostService {
         validatePostOwner(user, post);
 
         if (post.isDeleted()) {
-            throw new ApiException(HttpStatus.CONFLICT, "already_deleted_post");
+            throw new ApiException(HttpStatus.CONFLICT, "conflicted state");
         }
 
         post.delete();
@@ -170,7 +170,7 @@ public class PostService {
         Post post = getActivePost(postId);
 
         if (postLikeRepository.existsByPostAndUser(post, user)) {
-            throw new ApiException(HttpStatus.CONFLICT, "already_liked_post");
+            throw new ApiException(HttpStatus.CONFLICT, "conflicted state");
         }
 
         PostLike postLike = new PostLike(post, user);
@@ -184,7 +184,7 @@ public class PostService {
         Post post = getActivePost(postId);
 
         PostLike postLike = postLikeRepository.findByPostAndUser(post, user)
-                .orElseThrow(() -> new ApiException(HttpStatus.CONFLICT, "post_like_not_found"));
+                .orElseThrow(() -> new ApiException(HttpStatus.CONFLICT, "conflicted state"));
 
         postLikeRepository.delete(postLike);
         post.decreaseLikes();
@@ -196,7 +196,7 @@ public class PostService {
         Post post = getActivePost(postId);
 
         if (postReportRepository.existsByPostAndUser(post, user)) {
-            throw new ApiException(HttpStatus.CONFLICT, "already_reported_post");
+            throw new ApiException(HttpStatus.CONFLICT, "already_reported");
         }
 
         PostReport postReport = new PostReport(post, user, request.getReason());
@@ -233,14 +233,14 @@ public class PostService {
 
     private Post getPost(Long postId) {
         return postRepository.findById(postId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "post_not_found"));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "content_not_found"));
     }
 
     private Post getActivePost(Long postId) {
         Post post = getPost(postId);
 
         if (post.isDeleted()) {
-            throw new ApiException(HttpStatus.NOT_FOUND, "post_not_found");
+            throw new ApiException(HttpStatus.NOT_FOUND, "content_not_found");
         }
 
         return post;
@@ -248,7 +248,7 @@ public class PostService {
 
     private void validatePostOwner(User user, Post post) {
         if (!post.getUser().getUserId().equals(user.getUserId())) {
-            throw new ApiException(HttpStatus.FORBIDDEN, "not_post_owner");
+            throw new ApiException(HttpStatus.FORBIDDEN, "denied_access");
         }
     }
 }
