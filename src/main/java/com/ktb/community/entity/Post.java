@@ -76,6 +76,12 @@ public class Post {
         this.comments++;
     }
 
+    public void decreaseComments() {
+        if (this.comments > 0) {
+            this.comments--;
+        }
+    }
+
     public void blind() {
         this.blinded = true;
     }

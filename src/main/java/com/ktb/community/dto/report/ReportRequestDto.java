@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-@NotBlank
 public class ReportRequestDto {
 
     @NotBlank(message = "신고 사유를 입력해주세요.")

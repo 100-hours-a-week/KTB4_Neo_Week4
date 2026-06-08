@@ -15,7 +15,7 @@ public class PostDetailResponseDto {
     public PostDetailResponseDto(Post post, boolean isLiked, boolean isBlinded, boolean isViewCounted) {
         this.post = new PostInfo(post);
         this.author = new AuthorInfo(post);
-        this.meta = new MetaInfo(post, isLiked, isBlinded, isViewCounted);
+        this.meta = new MetaInfo(post, isLiked, post.isBlinded(), isViewCounted);
     }
 
     @Getter
