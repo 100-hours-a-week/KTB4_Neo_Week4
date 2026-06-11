@@ -29,24 +29,21 @@ public class Draft {
 
     private boolean published = false;
 
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
     public Draft(User user, String title, String postBody, String postImage) {
         this.user = user;
         this.title = title;
         this.postBody = postBody;
         this.postImage = postImage;
-        this.updateAt = LocalDateTime.now();
+        this.updatedAt = null;
     }
 
     public void autosave(String title, String postBody, String postImage) {
         this.title = title;
         this.postBody = postBody;
         this.postImage = postImage;
-        this.updateAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
-    public void publish() {
-        this.published = true;
-    }
 }

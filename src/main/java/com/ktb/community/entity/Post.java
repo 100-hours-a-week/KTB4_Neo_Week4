@@ -45,7 +45,7 @@ public class Post {
         this.postImage = postImage;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.deletedAt = LocalDateTime.now();
+        this.deletedAt = null;
     }
 
     public void update(String title, String postBody, String postImage) {

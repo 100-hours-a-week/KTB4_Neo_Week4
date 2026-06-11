@@ -41,7 +41,7 @@ public class Comment {
     public Comment(Post post, User user, Comment parentComment, String commentBody) {
         this.post = post;
         this.user = user;
-        this.parentComment = parentComment;
+        this.parentComment = parentComment;ㅍ
         this.commentBody = commentBody;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
